@@ -534,7 +534,8 @@ elif choice == "Decrypt File":
                 st.warning("⚠️ Please enter phone number for OTP.")
             else:
                 with st.spinner("Sending OTP..."):
-                    otp = "123456"
+                    import random
+                    otp = str(random.randint(100000, 999999))
                     st.session_state.otp = otp
                     send_sms(phone, otp)
                     st.success("✅ OTP Sent smoothly.")
