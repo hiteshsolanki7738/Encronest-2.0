@@ -549,22 +549,27 @@ elif choice == "Decrypt File":
                         encrypted_file.seek(0)
                         decrypted = decrypt_bytes(encrypted_file.read(), password)
                         st.download_button("📥 Download Decrypted File", decrypted, file_name=f"decrypted_{encrypted_file.name}", use_container_width=True)
-                        ip, geo = get_geo()
-                        device = get_user_device()
-                        databases.create_document(
-                            database_id=DATABASE_ID,
-                            collection_id="access_logs",
-                            document_id=ID.unique(),
-                            data={
-                                "filename": encrypted_file.name,
-                                "email": st.session_state.user,
-                                "ip": ip,
-                                "geo_location": geo,
-                                "device": device,
-                                "status": "DECRYPT_SUCCESS"
-                            }
-                        )
                         st.success("🎉 Decryption successful! You can now download your file.")
+                        
+                        try:
+                            ip, geo = get_geo()
+                            device = get_user_device()
+                            databases.create_document(
+                                database_id=DATABASE_ID,
+                                collection_id="access_logs",
+                                document_id=ID.unique(),
+                                data={
+                                    "filename": encrypted_file.name,
+                                    "email": st.session_state.user,
+                                    "ip": ip,
+                                    "geo_location": geo,
+                                    "device": device,
+                                    "status": "DECRYPT_SUCCESS"
+                                }
+                            )
+                        except Exception as log_error:
+                            pass # Logging failed (network issue), but decryption succeeded!
+                            
                     except Exception as e:
                         st.error("❌ Decryption failed. Incorrect password or corrupted file.")
                 else:
