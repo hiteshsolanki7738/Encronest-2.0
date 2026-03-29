@@ -460,8 +460,18 @@ elif choice == "Upload File":
         
         with col3:
             if st.button("📄 Generate AI Summary", use_container_width=True):
-                text = file.read().decode("utf-8", errors="ignore")
-                st.info(f"**Document Summary:**\n\n{generate_summary(text)}")
+                file.seek(0)
+                try:
+                    if file.name.lower().endswith(".pdf"):
+                        import PyPDF2
+                        reader = PyPDF2.PdfReader(file)
+                        text = "".join(page.extract_text() or "" for page in reader.pages)
+                    else:
+                        text = file.read().decode("utf-8", errors="ignore")
+                    
+                    st.info(f"**Document Summary:**\n\n{generate_summary(text)}")
+                except Exception as e:
+                    st.error(f"Could not read document: {e}")
 
         with col4:
             if st.button("🔒 Encrypt & Share", use_container_width=True):
